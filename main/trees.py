@@ -1,14 +1,11 @@
 from math import log
 import operator
 
-
-
 # 创建数据集
 def createDataSet():
     dataSet = [[1, 1, 'maybe'], [1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']]
     lables = ['no surfacing', 'flippers']
     return dataSet, lables
-
 
 # 计算熵
 def calcShannonEnt(dataSet):
