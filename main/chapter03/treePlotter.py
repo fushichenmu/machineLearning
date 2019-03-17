@@ -1,6 +1,6 @@
-#-*- coding: utf-8 -*-  #表示使用这个编码
+# -*- coding: utf-8 -*-  #表示使用这个编码
 import matplotlib.pyplot as plt
-
+from chapter03.trees import *
 '''
 定义文本框和箭头格式
 '''
@@ -96,24 +96,26 @@ def classify(decisionTree, featLables, testVec):
     firstStr = list(decisionTree.keys())[0]
     secondDict = decisionTree[firstStr]
     featIndex = featLables.index(firstStr)  # 为啥要求其标签索引位置？
-    for key in secondDict.keys():# 遍历所有的子节点
-        if testVec[featIndex] == key: # 如果测试中的该索引位置的值与 子节点当前值相同，则判断是否分析到了尽头
-            if type(secondDict[key]).__name__ == 'dict':  #递归再次调用
+    for key in secondDict.keys():  # 遍历所有的子节点
+        if testVec[featIndex] == key:  # 如果测试中的该索引位置的值与 子节点当前值相同，则判断是否分析到了尽头
+            if type(secondDict[key]).__name__ == 'dict':  # 递归再次调用
                 classLabel = classify(secondDict[key], featLables, testVec)
             else:
-                classLabel = secondDict[key] # 如果到了叶子节点，则返回当前节点的分类标签
+                classLabel = secondDict[key]  # 如果到了叶子节点，则返回当前节点的分类标签
     return classLabel
 
+
 # 使用pickle模块存储决策树
-def storeTree(inputTree,filename):
+def storeTree(inputTree, filename):
     import pickle
-    fw = open(filename,'wb+')
-    pickle.dump(inputTree,fw)
+    fw = open(filename, 'wb+')
+    pickle.dump(inputTree, fw)
     fw.close()
+
 
 def grabTree(filename):
     import pickle
-    fr = open(filename,"rb")
+    fr = open(filename, "rb")
     return pickle.load(fr)
 
 
@@ -139,6 +141,12 @@ tree = retrieveTree(0)
 # print(getTreeDepth(tree))
 # createPlot(tree)
 
-storeTree(tree,"C:\\Users\\Mypc\\Desktop\\abc.txt")
-mytree= grabTree("C:\\Users\\Mypc\\Desktop\\abc.txt")
-print(mytree)
+# storeTree(tree,"C:\\Users\\Mypc\\Desktop\\abc.txt")
+# mytree= grabTree("C:\\Users\\Mypc\\Desktop\\abc.txt")
+fr = open("C:\\Users\\Mypc\\Desktop\\lenses.txt")
+lenses = [inst.strip().split('\t') for inst in fr.readlines()]
+lenseLabels = ['age', 'no lenses', 'astigmatic', 'tearRate']
+lensensTree = createTree(lenses,lenseLabels)
+print(lensensTree)
+# createPlot(lensensTree)
+classify(lensensTree,lenseLabels,[1,0])
