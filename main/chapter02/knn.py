@@ -1,5 +1,5 @@
 from os import listdir
-from main.numpyTest import *
+from chapter02.numpyTest import *
 def img2vector(filename):
     returnVect =zeros((1,1024))
     fr= open(filename)

@@ -1,6 +1,5 @@
 #-*- coding: utf-8 -*-  #表示使用这个编码
 import matplotlib.pyplot as plt
-from trees import *
 
 '''
 定义文本框和箭头格式
