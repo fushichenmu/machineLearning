@@ -97,5 +97,5 @@ def retrieveTree(i):
                    ]
     return listOfTrees[i]
 
-tree =  retrieveTree(1)
-print(getTreeDepth(tree))
+# tree =  retrieveTree(1)
+# print(getTreeDepth(tree))

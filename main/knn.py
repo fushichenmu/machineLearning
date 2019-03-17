@@ -37,4 +37,4 @@ def handwritingClassTest():
 
 # returnVect = img2vector("C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch02\\digits\\trainingDigits\\0_1.txt")
 # print(returnVect)
-handwritingClassTest()
+# handwritingClassTest()
