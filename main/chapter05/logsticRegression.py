@@ -26,11 +26,11 @@ def gradAscent(dataMatIn, classLabels):
     weights = ones((n, 1))  # 初始化权重，即回归系数，这里是个向量n*1
     for k in range(maxCycles):
         h = sigmoid(dataMatrix * weights)  # 注意，这里是矩阵相乘！！！[m*n] * [n*1] =[m*1] 为啥不把[1*1]放入其中？？？
-        error = (labelMat - h)  # 这个error是干嘛的？[n*1] -[m*1]  = ???
+        error = (labelMat - h)  #用于梯度上升
         weights = weights + alpha * dataMatrix.transpose() * error  # 迭代权重 ，transponse是求其转置矩阵 这里是 [n*m] * [m*1] = [n*1]
     return weights
 
 
-dataMat, labelMat = loadDataSet()
-print(gradAscent(dataMat, labelMat))
+# dataMat, labelMat = loadDataSet()
+# print(gradAscent(dataMat, labelMat))
 # print(ones((5,1)))
