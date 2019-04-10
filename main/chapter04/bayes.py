@@ -38,7 +38,7 @@ def trainNB0(trainMatrix, trainCategory):
     pAbusive = sum(trainCategory) / float(numTrainDocs)  # 训练类别除以训练量 = 侮辱性文档的概率P(ci)！ 这个地方trainCategory[i] =1/0
     p0Num = ones(numWords)  # 构造1*numWords向量
     p1Num = ones(numWords)  # 初始化求概率的分子变量和分母变量，
-    p0Denom = 2.0;
+    p0Denom = 2.0
     p1Denom = 2.0  # 这里防止有一个p(xn|1)为0，则最后的乘积也为0，所有将分子初始化为1，分母初始化为2。
     for i in range(numTrainDocs):  # 遍历每一个训练文档
         if trainCategory[i] == 1:  # 如果这个文档属于侮辱性文档
