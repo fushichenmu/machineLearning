@@ -168,34 +168,34 @@ Parameters:
 """
 
 
-def showClassifer(dataMat, w, b):
-    # 绘制样本点
-    data_plus = []  # 正样本
-    data_minus = []  # 负样本
-    for i in range(len(dataMat)):
-        if   labelMat[i] > 0:
-            data_plus.append(dataMat[i])
-        else:
-            data_minus.append(dataMat[i])
-    data_plus_np = np.array(data_plus)  # 转换为numpy矩阵
-    data_minus_np = np.array(data_minus)  # 转换为numpy矩阵
-    plt.scatter(np.transpose(data_plus_np)[0], np.transpose(data_plus_np)[1], s=30, alpha=0.7)  # 正样本散点图
-    plt.scatter(np.transpose(data_minus_np)[0], np.transpose(data_minus_np)[1], s=30, alpha=0.7)  # 负样本散点图
-    # 绘制直线
-    x1 = max(dataMat)[0]
-    x2 = min(dataMat)[0]
-    a1, a2 = w
-    b = float(b)
-    a1 = float(a1[0])
-    a2 = float(a2[0])
-    y1, y2 = (-b - a1 * x1) / a2, (-b - a1 * x2) / a2
-    plt.plot([x1, x2], [y1, y2])
-    # 找出支持向量点
-    for i, alpha in enumerate(alphas):
-        if abs(alpha) > 0: #绝对值大于0，此时表示支持向量
-            x, y = dataMat[i]
-            plt.scatter([x], [y], s=150, c='none', alpha=0.7, linewidth=1.5, edgecolor='red')
-    plt.show()
+# def showClassifer(dataMat, w, b):
+#     # 绘制样本点
+#     data_plus = []  # 正样本
+#     data_minus = []  # 负样本
+#     for i in range(len(dataMat)):
+#         if   labelMat[i] > 0:
+#             data_plus.append(dataMat[i])
+#         else:
+#             data_minus.append(dataMat[i])
+#     data_plus_np = np.array(data_plus)  # 转换为numpy矩阵
+#     data_minus_np = np.array(data_minus)  # 转换为numpy矩阵
+#     plt.scatter(np.transpose(data_plus_np)[0], np.transpose(data_plus_np)[1], s=30, alpha=0.7)  # 正样本散点图
+#     plt.scatter(np.transpose(data_minus_np)[0], np.transpose(data_minus_np)[1], s=30, alpha=0.7)  # 负样本散点图
+#     # 绘制直线
+#     x1 = max(dataMat)[0]
+#     x2 = min(dataMat)[0]
+#     a1, a2 = w
+#     b = float(b)
+#     a1 = float(a1[0])
+#     a2 = float(a2[0])
+#     y1, y2 = (-b - a1 * x1) / a2, (-b - a1 * x2) / a2
+#     plt.plot([x1, x2], [y1, y2])
+#     # 找出支持向量点
+#     for i, alpha in enumerate(alphas):
+#         if abs(alpha) > 0: #绝对值大于0，此时表示支持向量
+#             x, y = dataMat[i]
+#             plt.scatter([x], [y], s=150, c='none', alpha=0.7, linewidth=1.5, edgecolor='red')
+#     plt.show()
 
 
 """
@@ -447,14 +447,55 @@ def multiTest():
     print ("在%d次迭代后测试集的错误率是: %.2f%%" % (numTests, errorSum2/float(numTests)))
 
 def img2vector(filename):
-    returnVect =np.zeros((1,1024))
-    fr= open(filename)
+    returnVect = np.zeros((1,1024))
+    fr = open(filename)
     for i in range(32):
-        lineStr =fr.readline()
+        lineStr = fr.readline()
         for j in range(32):
-            returnVect[0 ,32*i+j] = int(lineStr[j])
+            returnVect[0,32*i+j] = int(lineStr[j])
     return returnVect
 
+def loadImages(dirName):
+    from os import listdir
+    hwLabels = []
+    trainingFileList = listdir(dirName)           #load the training set
+    m = len(trainingFileList)
+    trainingMat = np.zeros((m,1024))
+    for i in range(m):
+        fileNameStr = trainingFileList[i]
+        fileStr = fileNameStr.split('.')[0]     #take off .txt
+        classNumStr = int(fileStr.split('_')[0])
+        if classNumStr == 9: hwLabels.append(-1)
+        else: hwLabels.append(1)
+        trainingMat[i,:] = img2vector('%s/%s' % (dirName, fileNameStr))
+    return trainingMat, hwLabels
+
+def testDigits(kTup=('rbf', 20)):
+    dataArr,labelArr = loadImages('C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch06\\digits\\trainingDigits')
+    b,alphas = smoP(dataArr, labelArr, 200, 0.0001, 10000, kTup)
+    datMat=np.mat(dataArr); labelMat = np.mat(labelArr).transpose()
+    svInd=np.nonzero(alphas.A>0)[0]
+    sVs=datMat[svInd]
+    labelSV = labelMat[svInd];
+    print ("there are %d Support Vectors" % np.shape(sVs)[0])
+    m,n = np.shape(datMat)
+    errorCount = 0
+    for i in range(m):
+        kernelEval = kernelTrans(sVs,datMat[i,:],kTup)
+        predict=kernelEval.T * np.multiply(labelSV,alphas[svInd]) + b
+        if np.sign(predict)!=np.sign(labelArr[i]): errorCount += 1
+    print("the training error rate is: %f" % (float(errorCount)/m))
+    dataArr,labelArr = loadImages('C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch06\\digits\\testDigits')
+    errorCount = 0
+    datMat=np.mat(dataArr); labelMat = np.mat(labelArr).transpose()
+    m,n = np.shape(datMat)
+    for i in range(m):
+        kernelEval = kernelTrans(sVs,datMat[i,:],kTup)
+        predict=kernelEval.T * np.multiply(labelSV,alphas[svInd]) + b
+        if np.sign(predict)!=np.sign(labelArr[i]): errorCount += 1
+    print("the test error rate is: %f" % (float(errorCount)/m))
+
+testDigits(('rbf',20))
 # testRbf(k1=20)
 # dataMat = np.mat([(1, 2), (3, 4), (5, 6), (7, 8)])
 # print(dataMat*dataMat[1,:].T)
