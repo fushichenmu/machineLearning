@@ -476,7 +476,7 @@ def testDigits(kTup=('rbf', 20)):
     datMat=np.mat(dataArr); labelMat = np.mat(labelArr).transpose()
     svInd=np.nonzero(alphas.A>0)[0]
     sVs=datMat[svInd]
-    labelSV = labelMat[svInd];
+    labelSV = labelMat[svInd]
     print ("there are %d Support Vectors" % np.shape(sVs)[0])
     m,n = np.shape(datMat)
     errorCount = 0
