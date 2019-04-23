@@ -88,6 +88,6 @@ def majorityCnt(classList):
 
 
 
-# dataSet,lables = createDataSet()
-# print(createTree(dataSet,lables))
+dataSet,lables = createDataSet()
+print(createTree(dataSet,lables))
 
