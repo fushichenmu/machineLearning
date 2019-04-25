@@ -129,9 +129,52 @@ def AdaClassify(data,weekClass):
         aggClass += weekClass[i]['alpha']*classEst
     return np.sign(aggClass)
 
-xMat,yMat=get_Mat('C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch07\\simpdata.txt')
-weekClass,aggClass= Ada_train(xMat,yMat,maxC=9)
-result = AdaClassify(xMat,weekClass)
-print(result)
+"""
+导入数据集
+"""
+# train = pd.read_table("C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch07\\horseColicTraining2.txt",header = None)
+# test = pd.read_table("C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch07\\horseColicTest2.txt",header = None)
+
+"""
+构建分类函数
+"""
+def calAcc(maxC = 40):
+    train_xMat,train_yMat =get_Mat("C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch07\\horseColicTraining2.txt")
+    n =train_xMat.shape[0]
+    weekClass,aggClass = Ada_train(train_xMat,train_yMat,maxC)
+    yhat = AdaClassify(train_xMat,weekClass)
+    train_re = 0
+    for i in range(n):
+        if yhat[i] == train_yMat[i]:
+            train_re += 1
+    train_acc = train_re/n
+    # print(f'训练集准确率为{train_acc}')
+
+    test_re = 0
+    test_xMat,test_yMat =get_Mat("C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch07\\horseColicTest2.txt")
+    m = test_xMat.shape[0]
+    yhat = AdaClassify(test_xMat,weekClass)
+    for i in range(m):
+        if(yhat[i] == test_yMat[i]):
+            test_re +=1
+    test_acc =test_re/m
+    # print(f'测试集准确率为{test_acc}')
+    return train_acc,test_acc
+
+
+"""
+病马测试
+"""
+def testModel():
+    cycleTime= [10,20,30,50,60]
+    for i in range(len(cycleTime)):
+        train_acc, test_acc = calAcc(cycleTime[i])
+        print(f"当前迭代次数{cycleTime[i]},训练集准确率{np.round(train_acc,4)},测试集准确率{np.round(test_acc,4)}")
+
+testModel()
+# xMat,yMat=get_Mat('C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch07\\simpdata.txt')
+# weekClass,aggClass= Ada_train(xMat,yMat,maxC=9)
+# result = AdaClassify(xMat,weekClass)
+# print(result)
 # show_plot(xMat,yMat)
 
