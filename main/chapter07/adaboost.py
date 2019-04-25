@@ -172,6 +172,7 @@ def testModel():
         print(f"当前迭代次数{cycleTime[i]},训练集准确率{np.round(train_acc,4)},测试集准确率{np.round(test_acc,4)}")
 
 testModel()
+
 # xMat,yMat=get_Mat('C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch07\\simpdata.txt')
 # weekClass,aggClass= Ada_train(xMat,yMat,maxC=9)
 # result = AdaClassify(xMat,weekClass)
