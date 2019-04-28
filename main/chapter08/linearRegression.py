@@ -39,7 +39,7 @@ def plotShow(dataSet):
 参数说明：
     dataSet:原始数据集
 返回：
-    ws:回归系数(列向量)
+    ws:回归系数(行向量)
 """
 def standRegres(xMat, yMat):
     xTx = xMat.T*xMat

@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
+plt.rcParams['font.sans-serif'] = ['simhei']
+# % matplotlib inline
 
 # 获取原数据
 sampleSet = pd.read_csv('C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch08\\ex0.txt', header=None, sep='\t')
@@ -74,9 +75,38 @@ def LWLR(testMat,xMat,yMat,k=1.0):
         if( np.linalg.det(xTx) == 0 ):
             print('矩阵非满秩矩阵，不能求逆')
             return
-        ws = xTx.I *(xMat * (weights* yMat))  # 每一条测试数据计算的权重都不一样，虽然挺高了精度，但是计算量会特别大
+        ws = xTx.I *(xMat.T* (weights* yMat))  # 每一条测试数据计算的权重都不一样，虽然挺高了精度，但是计算量会特别大
         yHat[i] = testMat[i]*ws
     return yHat
 
+sortIndexes = xMat[:,1].argsort(0) #升序 变成np.array了！
+xSort = xMat[sortIndexes][:,0] # 对于任意一行，取第0列，因为有坑，外头多了一层
+#计算不同k取值下的yHat
+yHat1 = LWLR(xMat,xMat,yMat,k=1.0)
+yHat2 = LWLR(xMat,xMat,yMat,k=0.1)
+yHat3 = LWLR(xMat,xMat,yMat,k=0.003)
+#创建画布
+fig = plt.figure(figsize=(6,8),dpi=100)
+#子图1绘制k=1.0的曲线
+fig1 = fig.add_subplot(311)
+plt.scatter(xMat.A[:,1],yMat.A,c='b',s=5)
+plt.plot(xSort[:,1],yHat1[sortIndexes],linewidth = 1, color='r')
+plt.title('局部加权线性回归，k=1.0',size= 10,color='r')
+#子图1绘制k=0.1的曲线
+fig2 = fig.add_subplot(312)
+plt.scatter(xMat.A[:,1],yMat.A,c='b',s=5)
+plt.plot(xSort[:,1],yHat2[sortIndexes],linewidth = 1, color='r')
+plt.title('局部加权线性回归，k=0.1',size= 10,color='r')
+#子图1绘制k=0.003的曲线
+fig3 = fig.add_subplot(313)
+plt.scatter(xMat.A[:,1],yMat.A,c='b',s=5)
+plt.plot(xSort[:,1],yHat3[sortIndexes],linewidth = 1, color='r')
+plt.title('局部加权线性回归，k=0.003',size= 10,color='r')
+#调整子图间距
+plt.tight_layout(pad=1.2)
+plt.show()
 
-
+#相关系数比较
+print(np.corrcoef(yMat.T,yHat1.T))
+print(np.corrcoef(yMat.T,yHat2.T))
+print(np.corrcoef(yMat.T,yHat3.T))
