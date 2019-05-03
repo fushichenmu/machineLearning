@@ -108,5 +108,63 @@ def test():
     plt.ylabel('SSE')
     plt.legend(['train_sse','test_sse'])
     plt.show()
+
+
 #光100条数据都跑了2min
-test()
+# test()
+
+"""
+函数说明：
+    岭回归线性分类
+入参： 
+    xMat：原始数据集
+    yMat: 原始结果集
+返回：
+    回归系数
+"""
+def ridgeRegres(xMat,yMat,lam=0.2):
+    xTx = xMat.T*xMat
+    denom = xTx + np.eye(np.shape(xMat)[1])*lam  #为什么是取1？
+    if np.linalg.det(denom) == 0.0:
+        print("This matrix is singular, cannot do inverse")
+        return
+    ws = denom.I * (xMat.T*yMat)
+    return ws
+
+"""
+函数说明：
+    用鲍鱼数据测试岭回归
+入参：
+    xArr: 原始数据集
+    yArr: 原始结果集
+返回：
+    wMat: 30次的权重结果
+"""
+def ridge(xMat, yMat):
+    # 数据标准化
+    yMean = np.mean(yMat,0)
+    yMat = yMat-yMean
+    xMeans = np.mean(xMat,0)
+    xVar = np.var(xMat,0)
+    xMat = (xMat-xMeans)/xVar
+
+    numTestPts = 30
+    wMat = np.zeros((numTestPts, np.shape(xMat)[1]))
+    for i in range(numTestPts):
+        ws = ridgeRegres(xMat, yMat, np.exp(i - 10))
+        wMat[i, :] = ws.T
+    return wMat
+
+"""
+岭回归测试
+lambda非常小时，系数与普通线性回归结果一致，而lambda非常大时，所有回归系数缩减为0；因此可以在中间某处找到使得预测结果最好的lambda值
+"""
+def ridgeTest():
+    dataSet = get_data('C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch08\\abalone.txt')
+    xArr,yArr =get_Mat(dataSet)
+    wMat = ridge(xArr, yArr)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(wMat)
+    plt.show()
+
