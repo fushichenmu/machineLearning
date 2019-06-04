@@ -86,7 +86,7 @@ def createSimpleDataSet():
 
 
 def binSplitDataSet(dataSet, feature, value):
-    mat0 = dataSet.loc[dataSet.iloc[:, feature] > value, :]  # 注意都是中括号.loc函数是干嘛的？？
+    mat0 = dataSet.loc[dataSet.iloc[:, feature] > value, :]  # 注意都是中括号.loc函数是pandas里边索引数据的方式之一即loc[索引]
     mat0.index = range(mat0.shape[0])
     mat1 = dataSet.loc[dataSet.iloc[:, feature] <= value, :]
     mat1.index = range(mat1.shape[0])
@@ -104,7 +104,7 @@ def binSplitDataSet(dataSet, feature, value):
 
 
 def errType(dataSet):
-    var = dataSet.iloc[:, -1].var() * dataSet.shape[0]  # 什么是均方差？？
+    var = dataSet.iloc[:, -1].var() * dataSet.shape[0]  # 什么是均方差？？就是该列方差*样本总数
     return var
 
 
@@ -136,8 +136,8 @@ def leafType(dataSet):
     bestValue:最佳特征切分值
 """
 def chooseBestSplit(dataSet,leafType=leafType,errType=errType,ops=(1,4)):
-    tolS =ops[0]; tolN = ops[1]                             #前者为允许的误差下降值，后者为切分的最小样本数
-    if(len(set(dataSet.iloc[:,-1].values)) ==1):            #如果当前所有值相等，则退出
+    tolS =ops[0]; tolN = ops[1]                                                 #前者为允许的误差下降值，后者为切分的最小样本数
+    if(len(set(dataSet.iloc[:,-1].values)) ==1):                                #如果当前所有值相等，则退出
         return None;leafType(dataSet)
     m,n = dataSet.shape                                                         #样本集合维度m,n
     S = errType(dataSet)                                                        #默认最后一个特征为最佳切分特征，计算其误差估计
@@ -160,13 +160,70 @@ def chooseBestSplit(dataSet,leafType=leafType,errType=errType,ops=(1,4)):
         return None, leafType(dataSet)
     return bestIndex, bestValue
 
+"""
+函数说明：
+   树构建函数
+入参：
+    dataSet:原始数据集
+    leafType:生成叶子节点函数
+    errType:生成总方差函数
+    ops：用户定义的参数构成的元祖
+返回：
+    returnTree:构建的回归树
+"""
 
+def createTree(dataSet,leafType=leafType,errType=errType,ops=(1,4)):
+    col,value =chooseBestSplit(dataSet,leafType,errType,ops)
+    if col ==None :
+        return value
+    returnTree = {}
+    returnTree['spInd'] = col
+    returnTree['spVal'] = value
+    leftSet,rightSet = binSplitDataSet(dataSet,col,value)
+    returnTree['left'] = createTree(leftSet,leafType,errType,ops)
+    returnTree['right'] = createTree(rightSet,leafType,errType,ops)
+    return returnTree
 
+"""
+函数说明：
+    用sklearn创建回归树
+入参：
+    dataSet：样本数据集
+"""
+def createTreeBySklearn(dataSet):
+    from sklearn.tree import DecisionTreeRegressor
+    from sklearn import linear_model
+    x = (dataSet.iloc[:,1].values).reshape(-1,1)
+    y = (dataSet.iloc[:,-1].values).reshape(-1,1)
+    model1 = DecisionTreeRegressor(max_depth=1)
+    model2 = DecisionTreeRegressor(max_depth=3)
+    model3 = linear_model.LinearRegression()
+    model1.fit(x, y)
+    model2.fit(x, y)
+    model3.fit(x, y)
+    #预测
+    X_test = np.arange(0,1,0.01)[:,np.newaxis]
+    y_1 = model1.predict(X_test)
+    y_2 = model2.predict(X_test)
+    y_3 = model3.predict(X_test)
+    #可视化结果
+    plt.figure()
+    plt.scatter(x,y,s=20,c='blue',label='data')
+    plt.plot(X_test, y_1, color='cornflowerblue',label='max_depth1',linewidth=2)
+    plt.plot(X_test, y_2, color='yellowgreen', label='max_depth3', linewidth=2)
+    plt.plot(X_test, y_3, color='red', label='liner regression', linewidth=2)
+    plt.xlabel("data")
+    plt.ylabel("data")
+    plt.title("Decision Tree Regression")
+    plt.legend()
+    plt.show()
 
+# dataSet = createSimpleDataSet()
+# ex00 = pd.read_csv("C:\\Users\\Mypc\\Desktop\\第8期 树回归（完整版）\\ex0.txt", header=None, sep="\t")
+# createTreeBySklearn(ex00)
 
-dataSet = createSimpleDataSet()
-ex00 = pd.read_csv("C:\\Users\\Mypc\\Desktop\\第8期 树回归（完整版）\\ex00.txt", header=None, sep="\t")
-print(chooseBestSplit(ex00))
+# returnTree =createTree(ex00)
+# print(returnTree)
 # plt.scatter(ex00.iloc[:,0].values,ex00.iloc[:,1].values)
 # plt.show()
 # print(ex00.head())
