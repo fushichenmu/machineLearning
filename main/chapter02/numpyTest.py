@@ -77,7 +77,7 @@ def classifyPerson():
     print('You will probably like this person:', resultList[classifierResult - 1])#打印结果
 
 
-# returnMat, classLableVector =file2matrix("C:\\Users\\Mypc\\Desktop\\machinelearninginaction\\Ch02\\datingTestSet2.txt")
+# returnMat, classLableVector =file2matrix(r"C:\Users\qwe\Desktop\datingTestSet2.txt")
 # fig = plt.figure()
 # ax = fig.add_subplot(111)
 # ax.scatter(returnMat[:,0], returnMat[:,1],15.0*array(classLableVector),15.0*array(classLableVector))
@@ -85,4 +85,4 @@ def classifyPerson():
 
 # normDataSet,ranges,minValue = autoNorm(returnMat)
 # datingClassTest()
-# classifyPerson() u
+# classifyPerson()
